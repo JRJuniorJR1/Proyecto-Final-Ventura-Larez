@@ -1,0 +1,5 @@
+Irse a la ruta:
+
+
+node generadorProductsFaker.js
+node enviarProductosBd.js

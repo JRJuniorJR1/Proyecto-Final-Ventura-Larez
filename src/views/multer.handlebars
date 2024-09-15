@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a href="/home" style="text-decoration: none;">
+            <div class="m-2" style="display: flex; justify-content: flex-start;">
+                <img src="/static/images/logo.png" id="logo" style="height: 50px; width: 50px;">
+            </div>
+        </a>
+        <div class="collapse navbar-collapse align-items-center" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/chat"><i class="fas fa-comments  m-2"></i> Abrir chat</a>
+                </li>
+                {{#if userPremiumOrAdmin}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/realtimeproducts"><i class="fas fa-tasks  m-2"></i> Product Manager</a>
+                </li>
+                {{/if}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/carts/{{cart}}"><i class="fas fa-shopping-cart  m-2"></i> Tu carrito</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <span class="navbar-text nav-link  m-2 ">Hola, {{user.first_name}}!</span>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile"><i class="fas fa-id-card  m-2"></i> Tu perfil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/api/sessions/logout"><i class="fas fa-door-open  m-2"></i> Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>Suba los archivos requeridos:</h2>
+    <p class="lead">ID de usuario: {{userId}}</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <form id="uploadForm" action="/api/users/{{userId}}/documents" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="fileInput" class="form-label">Seleccionar archivos</label>
+          <input id="fileInput" type="file" name="documents" multiple class="form-control" required>
+          <div class="invalid-feedback">
+            Por favor, selecciona al menos un archivo.
+          </div>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Subir documentos</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+    <h5>Recordatorio:</h5>
+    <h6>Actualización a Usuario Premium</h6>
+    <p>Para proceder con la actualización a usuario premium, es necesario que cargue los siguientes documentos:</p>
+    <ol class="list-group">
+        <li class="list-group-item"><strong>1- Identificación</strong> - Denominación del archivo: <strong>cedula-identidad.png</strong></li>
+        <li class="list-group-item"><strong>2- Comprobante de domicilio</strong> - Denominación del archivo: <strong>comprobante-domicilio.png</strong></li>
+        <li class="list-group-item"><strong>3- Pasaporte</strong> - Denominación del archivo: <strong>pasaporte.png</strong></li>
+    </ol>
+    <div class="d-flex justify-content-around my-3">
+        <a href="/profile" class="btn btn-primary btn-lg btn-block">Ir al perfil para actualizar rol</a>
+    </div>
+</div>
+
+<script src="/static/js/multer.js"></script>

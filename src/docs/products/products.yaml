@@ -1,0 +1,428 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      description: Este endpoint te permite obtener todos los productos disponibles.
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Product'
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o un fallo de conexión en la base de datos.
+        "400":
+          description: Error al obtener productos.
+
+    post:
+      summary: Agregar un nuevo producto
+      description: Este endpoint te permite agregar un nuevo producto a la base de datos.
+      operationId: addProduct
+      security:
+        - cookieAuth: []
+      tags:
+        - Products
+      requestBody:
+        description: Objeto del producto que necesita ser agregado a la base de datos.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - price
+                - thumbnail
+                - code
+                - stock
+                - category
+              properties:
+                title:
+                  type: string
+                  description: El título del producto.
+                  example: "Producto Ejemplo"
+                description:
+                  type: string
+                  description: La descripción del producto.
+                  example: "Este es un producto de ejemplo."
+                price:
+                  type: number
+                  description: El precio del producto.
+                  example: 100.50
+                thumbnail:
+                  type: string
+                  description: La URL de la miniatura del producto.
+                  example: "https://ejemplo.com/miniatura.jpg"
+                code:
+                  type: string
+                  description: El código del producto.
+                  example: "PROD123"
+                stock:
+                  type: number
+                  description: El stock del producto.
+                  example: 50
+                category:
+                  type: string
+                  description: La categoría del producto.
+                  example: "Electrónica"
+      responses:
+        '201':
+          description: Producto agregado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Sucess: Producto agregado"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No auth token"
+                  details:
+                    type: string
+                    example: "Error: No auth token"
+        '400':
+          description: Ocurrió un error al agregar el producto.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error al agregar el producto"
+                  details:
+                    type: string
+                    example: "El campo 'precio' es obligatorio."
+
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un solo producto a partir de su Id
+      description: Este endpoint te permite obtener un producto específico a partir de su ID.
+      tags:
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: ID del producto que se desea solicitar.
+        schema:
+          $type: string
+          example: "6591e2a4a766a82405ff22a4"
+      responses:
+        "200":
+          description: Producto encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "400":
+          description: Error al obtener el producto.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o un fallo de conexión con la BD
+    put:
+      summary: Actualizar un producto a partir de su id
+      description: Este endpoint te permite actualizar un producto existente en la base de datos.
+      security:
+        - cookieAuth: []
+      tags:
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: ID del producto que se desea actualizar.
+        schema:
+          $type: string
+          example: "6591e2a4a766a82405ff22a4"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: El producto actualizado con éxito
+          content:
+            application/json:
+              schema:
+                  $ref: "#components/schemas/Product"
+        "400":
+          description: El id o alguna propiedad especificada no son válidos
+        "401":
+          description: No se pudo autenticar el usuario
+        "403":
+          description: El usuario no tiene los permisos necesarios para acceder a este endpoint
+        "404":
+          description: El producto no fue encontrado en la db
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o un fallo de conexión con la BD
+    delete:
+      summary: Elimina un producto
+      description: Esta ruta permite eliminar un producto por su ID.
+      security:
+        - cookieAuth: []
+      tags:
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: ID del producto a eliminar.
+        schema:
+          $type: string
+          example: "6591e2a4a766a82405ff22a4"
+      responses:
+        "200":
+          description: El producto fue eliminado con éxito
+          content:
+            application/json:
+              schema:
+                  $ref: "#components/schemas/Product"
+        "400":
+          description: El id especificado no es válido
+        "401":
+          description: No se pudo autenticar el usuario
+        "403":
+          description: El usuario no tiene los permisos necesarios para acceder a este endpoint
+        "404":
+          description: El producto no fue encontrado en la db
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o un fallo de conexión con la BD
+components:
+  securitySchemes:
+    cookieAuth:     # Tu esquema de seguridad
+      type: apiKey
+      in: cookie
+      name: severus24
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Id autogenerado de mongo
+        tittle:
+          type: string
+          description: Titulo del producto
+        description: 
+          type: string
+          description: Descripcion del producto
+        price:
+          type: number
+          description: Precio del producto
+        thumbnail:
+          type: string
+          description: Url a la imagen del producto
+        code:
+          type: string
+          description: Codigo del producto
+        stock:
+          type: number
+          description: Stock del producto
+        category:
+          type: string
+          description: Categoria donde pertenece del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Creador del producto
+      example: 
+        _id: "6591e2a4a766a82405ff22a4"
+        title: "Notebook Gamer ROG Strix G15"
+        description: "Notebook Asus, diseñada para gamers"
+        price: 1500
+        thumbnail: "/static/products/1704059556284-ASUS-ROG.webp"
+        code: "LGP123"
+        stock: 102
+        category: "electronica"
+        status: true
+        owner: "admin"
+  requestBodies:
+    updateProduct:
+      type: object
+      properties:
+        tittle:
+          type: string
+          description: Titulo del producto
+        description: 
+          type: string
+          description: Descripcion del producto
+        price:
+          type: number
+          description: Precio del producto
+        thumbnail:
+          type: string
+          description: Url de la imagen del producto
+        code:
+          type: string
+          description: Codigo del producto
+        stock:
+          type: number
+          description: Stock del producto
+        category:
+          type: string
+          description: Categoria donde pertenece del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Creador del producto
+      example: 
+        title: "Samsung Galaxy S23 256gb"
+        description: "smarthphone Samsung"
+        price: 100
+        thumbnail: "/static/products/default.png"
+        code: "sam23"
+        stock: 102
+        category: "Smartphone"
+
+
+
+
+
+
+# paths:
+#   /api/products/:
+#     get:
+#       summary: Obtine todos los productos
+#       tags:
+#         - Products
+#       responses:
+#         "200":
+#           description: Los productos fueron obtenidos satisfactoriamente de la base de datos
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#components/schemas/Product'
+#         "500":
+#           description: Error interno del servidor, usualmente generado por una query defectuosa o un fallo de conexion en la base de datos
+
+#   /api/products/{pid}:
+#     get:
+#       summary: Obtiene un solo producto a partir de su Id
+#       tags:
+#         - Products
+#       parameters:
+#       - name: pid
+#         in: path
+#         required: true
+#         description: id del producto que se desea solicitar.
+#         schema:
+#           type: String
+#       responses:
+#         "200":
+#           description: Producto encontrado
+#           content: 
+#             application/json:
+#               schema:
+#                 $ref: '#components/schemas/Products'
+        
+# components: 
+#   schemas:
+#     Product:
+#       type: object
+#       properties:
+#         _id:
+#           type: ObjectId
+#           description: Id autogenerado de mongo
+#         tittle:
+#           type: String
+#           description: Titulo del producto
+#         description: 
+#           type: String
+#           description: Descripcion del producto
+#         price:
+#           type: Number
+#           description: Precio del producto
+#         thumbnail:
+#           type: String
+#           description: Imagen del producto
+#         code:
+#           type: String
+#           description: Codigo del producto
+#         stock:
+#           type: Number
+#           description: Stock del producto
+#         category:
+#           type: String
+#           description: Categoria donde pertenece del producto
+#         status:
+#           type: Boolean
+#           description: Estado del producto
+#         owner:
+#           type: String
+#           description: Creador del producto
+#       example: 
+#         _id: ObjectId("64ff36e4a5029e949c5ba588")
+#         title: "Monitor"
+#         description: "Monitor asus 24 pulgadas"
+#         price: 100
+#         thumbnail: "no hay"
+#         code: "asd123"
+#         stock: 102
+#         category: "PC"
+#         status: true
+#         owner: "admin"
+#   requestBodies:
+#     updateProduct:
+#       type: object
+#       properties:
+#         tittle:
+#           type: String
+#           description: Titulo del producto
+#         description: 
+#           type: String
+#           description: Descripcion del producto
+#         price:
+#           type: Number
+#           description: Precio del producto
+#         thumbnail:
+#           type: String
+#           description: Imagen del producto
+#         code:
+#           type: String
+#           description: Codigo del producto
+#         stock:
+#           type: Number
+#           description: Stock del producto
+#         category:
+#           type: String
+#           description: Categoria donde pertenece del producto
+#         status:
+#           type: Boolean
+#           description: Estado del producto
+#         owner:
+#           type: String
+#           description: Creador del producto
+#       example: 
+#         title: "Monitor"
+#         description: "Monitor asus 24 pulgadas"
+#         price: 100
+#         thumbnail: "no hay"
+#         code: "asd123"
+#         stock: 102
+#         category: "PC"
+#         status: true
+#         owner: "admin"

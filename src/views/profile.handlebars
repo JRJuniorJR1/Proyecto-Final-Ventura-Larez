@@ -1,0 +1,166 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a href="/home" style="text-decoration: none;">
+            <div class="m-2" style="display: flex; justify-content: flex-start;">
+                <img src="/static/images/logo.png" id="logo" style="height: 50px; width: 50px;">
+            </div>
+        </a>
+        <div class="collapse navbar-collapse align-items-center" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/chat"><i class="fas fa-comments  m-2"></i> Abrir chat</a>
+                </li>
+                {{#if userPremiumOrAdmin}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/realtimeproducts"><i class="fas fa-tasks  m-2"></i> Product Manager</a>
+                </li>
+                {{/if}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/carts/{{cartId}}"><i class="fas fa-shopping-cart  m-2"></i> Tu carrito</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <span class="navbar-text nav-link  m-2 ">Hola, {{user.first_name}}!</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile"><i class="fas fa-id-card  m-2"></i> Tu perfil</a>
+                </li>             
+                <li class="nav-item">
+                    <a class="nav-link" href="/api/sessions/logout"><i class="fas fa-door-open  m-2"></i> Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card mb-3 bg-transparent text-light">
+        <div class="card-header">
+            <h1 class="mb-3 text-light">👤 Mi Perfil</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent text-light">👥 <strong>Nombre:</strong> {{user.first_name}} {{user.last_name}}</li>
+                        <li class="list-group-item bg-transparent text-light">📧 <strong>Correo Electrónico:</strong> {{user.email}}</li>
+                        <li class="list-group-item bg-transparent text-light">🎫 <strong>ID de Usuario:</strong> {{user._id}}</li>
+                        <li class="list-group-item bg-transparent text-light">🎂 <strong>Edad:</strong> {{user.age}}</li>
+                        <li class="list-group-item bg-transparent text-light">🏷️ <strong>Tipo de Usuario:</strong> {{user.role}}</li>
+                        <li class="list-group-item bg-transparent text-light">🛒 <strong>ID de Carrito:</strong> {{cartId}}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-transparent text-light">
+                        <div class="card-header">
+                            📄 <strong>Documentos:</strong>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                {{#each user.documents}}
+                                    <li>{{this.name}}</li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="card bg-transparent text-light">
+        <div class="card-header">
+            <h2 class="text-light">⭐ Actualización a Usuario Premium</h2>
+        </div>
+        <div class="card-body">
+            <p class="text-light">Para proceder con la actualización a usuario premium, es necesario que cargue los siguientes documentos:</p>
+            <ol class="list-group">
+                <li class="list-group-item bg-transparent text-light"><strong>1- Identificación</strong> - Denominación del archivo: <strong>cedula-identificacion.png</strong></li>
+                <li class="list-group-item bg-transparent text-light"><strong>2- Comprobante de domicilio</strong> - Denominación del archivo: <strong>comprobante-domicilio.png</strong></li>
+                <li class="list-group-item bg-transparent text-light"><strong>3- Pasaporte</strong> - Denominación del archivo: <strong>pasaporte.png</strong></li>
+            </ol>
+            <div class="d-flex justify-content-around my-3">
+                <a href="/api/users/{{user._id}}/documents" class="btn btn-outline-info">📤 Cargar Documentos</a>
+            </div>
+            <div class="d-flex justify-content-around my-3">
+                <button id="btn-premium" class="btn btn-outline-success" onclick="upgradeToPremium('{{user._id}}')">⭐ Actualizar a Premium</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(45deg,#06c -52%,#000 81%,#a044e3 95%);
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 960px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card-body {
+    background-color: rgba(255, 252, 252, 0.1);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform .2s;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.btn {
+    border: none;
+    border-radius: 50px;
+    padding: 15px 30px;
+    font-size: 18px;
+    transition: background-color .2s, transform .2s;
+}
+
+.btn:hover {
+    transform: scale(1.1);
+}
+
+.btn-outline-info {
+    background-color: transparent;
+    color: #17a2b8;
+}
+
+.btn-outline-info:hover {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-outline-success {
+    background-color: transparent;
+    color: #28a745;
+}
+
+.btn-outline-success:hover {
+    background-color: #28a745;
+    color: white;
+}
+
+.footer {
+    margin-top: auto;
+}
+</style>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="/static/js/profile.js"></script>
