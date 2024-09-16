@@ -60,7 +60,6 @@ export const authorization = (role) => {
 }
 
 
-//-----------MOCK:----------//
 
 import { Faker, es } from '@faker-js/faker';
 
